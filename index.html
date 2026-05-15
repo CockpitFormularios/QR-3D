@@ -2,166 +2,458 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Code Generator - Versão Simplificada</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gerador QR Code - Imagem 3D Flutuante</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background: #1a1a2e;
+            background: #0a0a2a;
             color: white;
             text-align: center;
         }
-        input, button {
+        h1 { font-size: 24px; margin-bottom: 10px; }
+        .sub { color: #aaa; margin-bottom: 30px; font-size: 14px; }
+        input {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
             border-radius: 10px;
-            font-size: 16px;
-        }
-        input {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid #667eea;
-            color: white;
+            border: none;
+            font-size: 14px;
+            box-sizing: border-box;
         }
         button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #ff6b35;
             color: white;
             border: none;
-            cursor: pointer;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
             font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
         }
-        #qr {
+        .qr-box {
             background: white;
             padding: 20px;
             border-radius: 20px;
-            display: inline-block;
             margin: 20px 0;
+            display: inline-block;
         }
-        .passo {
-            background: #16213e;
+        .preview {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1a3a;
+            border-radius: 15px;
+        }
+        .preview img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 10px;
+        }
+        .exemplos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .exemplo {
+            background: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .passos {
+            text-align: left;
+            background: #1a1a3a;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .passos li { margin: 10px 0; }
+        .verde { color: #4CAF50; font-weight: bold; }
+        .dica {
+            background: #ff6b3522;
             padding: 15px;
             border-radius: 10px;
-            margin: 10px 0;
+            margin: 20px 0;
+            border-left: 4px solid #ff6b35;
             text-align: left;
         }
-        .dica {
-            background: #ff9800;
-            color: #1a1a2e;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-weight: bold;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h1>🎯 AR QR Code Generator</h1>
-    <p>Cole a URL da imagem e gere o QR Code</p>
 
-    <input type="text" id="urlInput" placeholder="Ex: https://exemplo.com/imagem.png">
-    <button onclick="gerar()">✨ GERAR QR CODE ✨</button>
+    <h1>✨ IMAGEM 3D FLUTUANTE ✨</h1>
+    <div class="sub">Cole a URL da imagem → Gere o QR Code → Escaneie com o celular</div>
 
-    <div id="qr" style="display: none;"></div>
-    <button id="downloadBtn" style="display: none; background: #4CAF50;" onclick="baixarQR()">📥 Baixar QR Code</button>
+    <input type="text" id="urlInput" placeholder="https://exemplo.com/imagem.png">
 
-    <div class="dica">
-        📱 IMPORTANTE: Para escanear, use o NAVEGADOR do celular (Chrome ou Safari)<br>
-        ➡️ Abra o navegador → Clique na barra de endereço → Ícone de QR Code ←
+    <div class="exemplos">
+        <span class="exemplo" onclick="setUrl('https://cdn-icons-png.flaticon.com/512/3094/3094820.png')">🚀 Foguete</span>
+        <span class="exemplo" onclick="setUrl('https://cdn-icons-png.flaticon.com/512/25/25694.png')">⭐ Estrela</span>
+        <span class="exemplo" onclick="setUrl('https://pngimg.com/uploads/mario/mario_PNG125.png')">🍄 Mario</span>
+        <span class="exemplo" onclick="setUrl('https://cdn-icons-png.flaticon.com/512/733/733547.png')">🐱 Gato</span>
     </div>
 
-    <div class="passo">
-        <strong>📋 Passo a passo:</strong><br>
-        1️⃣ Cole a URL da imagem acima<br>
-        2️⃣ Clique em "GERAR QR CODE"<br>
-        3️⃣ No CELULAR, abra o Chrome/Safari<br>
-        4️⃣ Toque na barra de endereço → ícone de QR Code<br>
-        5️⃣ Escaneie o QR Code da tela do computador<br>
-        6️⃣ Autorize a câmera<br>
-        7️⃣ Aponte para o QR Code → IMAGEM FLUTUA! 🚀
+    <button id="gerarBtn">🔲 GERAR QR CODE</button>
+
+    <div id="qrArea" class="hidden">
+        <div class="qr-box">
+            <div id="qrCode"></div>
+        </div>
+        <button id="baixarBtn" style="background: #4CAF50;">📥 BAIXAR QR CODE</button>
+    </div>
+
+    <div id="previewArea" class="preview hidden">
+        <div class="verde">✅ IMAGEM CARREGADA</div>
+        <img id="previewImg">
+    </div>
+
+    <div class="dica">
+        🔥 <strong>COMO VER A IMAGEM FLUTUANDO:</strong><br><br>
+        1. Escaneie o QR Code com o <strong class="verde">Google Chrome</strong> no celular<br>
+        2. Ou escaneie com o app <strong class="verde">"QR Code Reader"</strong> da loja<br>
+        3. A página vai abrir com a imagem em 3D<br>
+        4. Use os DEDOS para GIRAR e DAR ZOOM!
+    </div>
+
+    <div class="passos">
+        <strong>📱 PARA USAR NO CELULAR:</strong>
+        <ol>
+            <li>Baixe o app <strong>"QR & Barcode Reader"</strong> na Play Store/App Store</li>
+            <li>Escaneie o QR Code acima</li>
+            <li>Clique no link que aparecer</li>
+            <li>A imagem 3D vai abrir flutuando!</li>
+        </ol>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script>
-        let qrUrl = '';
+        let urlAtual = '';
 
-        function gerar() {
-            let url = document.getElementById('urlInput').value;
-            if (!url) {
-                alert('Digite a URL da imagem!');
-                return;
-            }
+        function setUrl(url) {
+            document.getElementById('urlInput').value = url;
+            carregarPreview(url);
+        }
 
-            // Criar HTML da AR
-            const arHTML = `<!DOCTYPE html>
+        function carregarPreview(url) {
+            const previewImg = document.getElementById('previewImg');
+            const previewArea = document.getElementById('previewArea');
+            previewImg.src = url;
+            previewImg.onload = () => {
+                previewArea.classList.remove('hidden');
+            };
+            previewImg.onerror = () => {
+                previewArea.classList.add('hidden');
+                alert('URL inválida ou imagem não encontrada');
+            };
+        }
+
+        function gerarHTML3D(imagemUrl) {
+            return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR Experience</title>
+    <title>Imagem 3D Flutuante</title>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; overflow: hidden; font-family: Arial; }
         #info {
             position: absolute;
             bottom: 20px;
             left: 0;
             right: 0;
             text-align: center;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             color: white;
-            padding: 10px;
-            font-family: Arial;
+            padding: 15px;
+            z-index: 100;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .instrucao {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 100;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div id="info">✨ Aponte a câmera para o QR Code | A imagem vai flutuar ✨</div>
-    
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"><\/script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.min.js"><\/script>
-    
-    <a-scene embedded arjs="sourceType: webcam;">
-        <a-marker preset="hiro">
-            <a-image src="${url}" position="0 0.5 0" scale="0.5 0.5 0.01" material="side: double">
-                <a-animation attribute="position" from="0 0.3 0" to="0 0.7 0" dur="1500" direction="alternate" repeat="indefinite"></a-animation>
-            </a-image>
-            <a-ring radius="0.7" radius-inner="0.6" color="#ff3366">
-                <a-animation attribute="rotation" from="0 0 0" to="0 360 0" dur="2000" repeat="indefinite"></a-animation>
-            </a-ring>
-        </a-marker>
-        <a-entity camera></a-entity>
-    </a-scene>
+    <div id="info">✨ IMAGEM 3D FLUTUANTE | Use os dedos para girar e dar zoom ✨</div>
+    <div class="instrucao">🖐️ Toque e arraste para girar | Pinça para zoom</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+    <script>
+        // CENA
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        scene.fog = new THREE.FogExp2(0x050510, 0.008);
+        
+        // CÂMERA
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 3.5);
+        
+        // RENDERER
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+        
+        // LUZES
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+        mainLight.position.set(2, 3, 4);
+        scene.add(mainLight);
+        
+        const fillLight = new THREE.PointLight(0x4466cc, 0.5);
+        fillLight.position.set(-1, 1, 2);
+        scene.add(fillLight);
+        
+        const backLight = new THREE.PointLight(0xffaa66, 0.3);
+        backLight.position.set(0, 0, -2);
+        scene.add(backLight);
+        
+        // ESTRELAS DE FUNDO
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 1500;
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+            starPositions[i*3] = (Math.random() - 0.5) * 200;
+            starPositions[i*3+1] = (Math.random() - 0.5) * 200;
+            starPositions[i*3+2] = (Math.random() - 0.5) * 100 - 50;
+        }
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 }));
+        scene.add(stars);
+        
+        // CARREGAR IMAGEM
+        const texture = new THREE.TextureLoader().load('${imagemUrl}');
+        const geometry = new THREE.PlaneGeometry(1.8, 1.8);
+        const material = new THREE.MeshStandardMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+            transparent: true,
+            metalness: 0.2,
+            roughness: 0.3,
+            emissive: 0x221100
+        });
+        
+        const imagePlane = new THREE.Mesh(geometry, material);
+        scene.add(imagePlane);
+        
+        // ANEL GIRATÓRIO
+        const ringGeo = new THREE.TorusGeometry(1.1, 0.04, 64, 200);
+        const ringMat = new THREE.MeshStandardMaterial({ color: 0xff6600, emissive: 0x442200 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        scene.add(ring);
+        
+        // ANEL EXTERNO
+        const ring2Geo = new THREE.TorusGeometry(1.3, 0.02, 64, 200);
+        const ring2Mat = new THREE.MeshStandardMaterial({ color: 0x33ff66, emissive: 0x226611 });
+        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        scene.add(ring2);
+        
+        // PARTÍCULAS FLUTUANTES
+        const particleCount = 800;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePos = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            particlePos[i*3] = (Math.random() - 0.5) * 4;
+            particlePos[i*3+1] = (Math.random() - 0.5) * 3;
+            particlePos[i*3+2] = (Math.random() - 0.5) * 3 - 1;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+        const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0xffaa55, size: 0.02 }));
+        scene.add(particles);
+        
+        // ANIMAÇÃO
+        let time = 0;
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+        let currentRotationX = 0;
+        let currentRotationY = 0;
+        
+        // CONTROLES DE TOQUE
+        let touchStartX = 0, touchStartY = 0;
+        let isDragging = false;
+        
+        document.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const deltaX = e.touches[0].clientX - touchStartX;
+            const deltaY = e.touches[0].clientY - touchStartY;
+            
+            targetRotationY += deltaX * 0.008;
+            targetRotationX += deltaY * 0.008;
+            
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+        
+        // ZOOM
+        let initialDistance = 0;
+        let initialScale = 1;
+        let currentScale = 1;
+        
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialDistance = Math.hypot(dx, dy);
+                initialScale = currentScale;
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && initialDistance > 0) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const distance = Math.hypot(dx, dy);
+                let scale = initialScale * (distance / initialDistance);
+                scale = Math.min(Math.max(scale, 0.6), 2);
+                currentScale = scale;
+                imagePlane.scale.set(scale, scale, 1);
+            }
+        });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.012;
+            
+            // Suaviza rotação
+            currentRotationX += (targetRotationX - currentRotationX) * 0.1;
+            currentRotationY += (targetRotationY - currentRotationY) * 0.1;
+            
+            // Aplica rotação
+            imagePlane.rotation.x = currentRotationX;
+            imagePlane.rotation.y = currentRotationY;
+            
+            // Flutuação automática
+            imagePlane.position.y = Math.sin(time) * 0.08;
+            imagePlane.position.z = Math.sin(time * 0.7) * 0.05;
+            
+            // Rota dos anéis
+            ring.rotation.x = time * 0.5;
+            ring.rotation.y = time * 0.8;
+            ring.rotation.z = time * 0.3;
+            
+            ring2.rotation.x = -time * 0.4;
+            ring2.rotation.y = time * 0.6;
+            ring2.rotation.z = -time * 0.2;
+            
+            // Partículas
+            particles.rotation.y = time * 0.1;
+            particles.rotation.x = time * 0.05;
+            
+            // Estrelas girando lentamente
+            stars.rotation.y = time * 0.02;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // AJUSTAR TAMANHO DA TELA
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        console.log('3D carregado!');
+    <\/script>
 </body>
 </html>`;
-
-            const blob = new Blob([arHTML], { type: 'text/html' });
-            qrUrl = URL.createObjectURL(blob);
-
-            const qrDiv = document.getElementById('qr');
-            qrDiv.innerHTML = '';
-            qrDiv.style.display = 'inline-block';
-            
-            new QRCode(qrDiv, {
-                text: qrUrl,
-                width: 250,
-                height: 250
-            });
-            
-            document.getElementById('downloadBtn').style.display = 'inline-block';
-            alert('QR Code gerado! Agora escaneie com o navegador do celular!');
         }
 
+        function gerarQRCode() {
+            const url = document.getElementById('urlInput').value.trim();
+            
+            if (!url) {
+                alert('Digite ou selecione uma URL de imagem!');
+                return;
+            }
+            
+            urlAtual = url;
+            
+            // Gerar HTML 3D
+            const htmlCompleto = gerarHTML3D(url);
+            const blob = new Blob([htmlCompleto], { type: 'text/html' });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            // Gerar QR Code
+            const qrDiv = document.getElementById('qrCode');
+            qrDiv.innerHTML = '';
+            
+            new QRCode(qrDiv, {
+                text: blobUrl,
+                width: 250,
+                height: 250,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            document.getElementById('qrArea').classList.remove('hidden');
+            carregarPreview(url);
+        }
+        
         function baixarQR() {
-            const canvas = document.querySelector('#qr canvas');
+            const canvas = document.querySelector('#qrCode canvas');
             if (canvas) {
                 const link = document.createElement('a');
-                link.download = 'qr-code.png';
+                link.download = 'qr-code-imagem-3d.png';
                 link.href = canvas.toDataURL();
                 link.click();
             }
         }
+        
+        document.getElementById('gerarBtn').onclick = gerarQRCode;
+        document.getElementById('baixarBtn').onclick = baixarQR;
+        
+        function carregarPreview(url) {
+            const previewImg = document.getElementById('previewImg');
+            const previewArea = document.getElementById('previewArea');
+            previewImg.src = url;
+            previewImg.onload = () => {
+                previewArea.classList.remove('hidden');
+            };
+        }
+        
+        // Carregar preview ao digitar
+        document.getElementById('urlInput').addEventListener('input', function() {
+            if (this.value) {
+                carregarPreview(this.value);
+            }
+        });
     </script>
 </body>
 </html>
