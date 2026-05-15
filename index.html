@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR QR Code - Imagem Flutuante REAL</title>
+    <title>AR QR Code - Imagem da Internet Flutuante</title>
     <style>
         * {
             margin: 0;
@@ -30,6 +30,12 @@
             font-size: 28px;
         }
         
+        .subtitle {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+        
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -51,21 +57,25 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
         
-        .image-input-area {
-            border: 2px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
+        .panel h2 {
             margin-bottom: 20px;
+            font-size: 20px;
         }
         
-        .image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 15px;
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
             border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
         }
         
         button {
@@ -78,7 +88,15 @@
             cursor: pointer;
             width: 100%;
             font-weight: bold;
-            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .qr-result {
+            text-align: center;
         }
         
         #qrCodeContainer {
@@ -103,6 +121,10 @@
             background: #4CAF50;
         }
         
+        .error {
+            background: #f44336;
+        }
+        
         .instruction {
             background: rgba(0,0,0,0.5);
             padding: 20px;
@@ -120,67 +142,97 @@
             margin-left: 20px;
         }
         
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+        
         #statusMsg {
             margin-top: 10px;
             font-size: 14px;
             text-align: center;
+        }
+        
+        .example-urls {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .example-urls a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .example-urls a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 AR QR Code Generator</h1>
+        <div class="subtitle">Cole a URL de qualquer imagem da internet → Gere QR Code → A imagem flutua em AR!</div>
         
         <div class="main-content">
             <div class="panel">
-                <h2>📷 1. Escolha sua imagem 3D</h2>
-                <div class="image-input-area" id="dropArea">
-                    📸 Clique para selecionar uma imagem<br>
-                    <small>(PNG, JPG, GIF - vai flutuar em 3D!)</small>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                    <div id="preview"></div>
+                <h2>📷 1. Cole a URL da imagem</h2>
+                <input type="text" id="imageUrl" class="url-input" placeholder="Ex: https://exemplo.com/imagem.png">
+                
+                <div class="example-urls">
+                    📌 Exemplos para testar:<br>
+                    <a onclick="testarImagem('https://pngimg.com/uploads/mario/mario_PNG125.png')">🍄 Mario</a> | 
+                    <a onclick="testarImagem('https://cdn-icons-png.flaticon.com/512/25/25694.png')">⭐ Estrela</a> | 
+                    <a onclick="testarImagem('https://cdn-icons-png.flaticon.com/512/3094/3094820.png')">🚀 Foguete</a>
                 </div>
+                
                 <button id="generateBtn">✨ GERAR QR CODE AR ✨</button>
+                
+                <div id="preview"></div>
                 <div id="statusMsg"></div>
             </div>
             
             <div class="panel qr-result">
                 <h2>🔲 2. Escaneie este QR Code</h2>
                 <div id="qrCodeContainer">
-                    <p style="color: #999; padding: 40px;">Selecione uma imagem e clique em GERAR</p>
+                    <p style="color: #999; padding: 40px;">Cole uma URL e clique em GERAR</p>
                 </div>
                 <button id="downloadQRBtn" style="display: none; background: #4CAF50;">📥 Baixar QR Code</button>
-                <div id="statusBadge" class="badge">⚠️ Aguardando</div>
+                <div id="statusBadge" class="badge">⚠️ Aguardando URL</div>
             </div>
         </div>
         
         <div class="instruction">
             <h3>🎯 COMO VER A IMAGEM FLUTUANDO:</h3>
             <ol>
-                <li><strong>1. Selecione qualquer imagem</strong> (pode ser foto, desenho, logo)</li>
+                <li><strong>1. Cole a URL da imagem</strong> (qualquer imagem da internet)</li>
                 <li><strong>2. Clique em "GERAR QR CODE AR"</strong></li>
-                <li><strong>3. Escaneie o QR Code com o app "AR.js" ou "WebAR"</strong> (disponível na loja de apps)</li>
-                <li><strong>4. Ou use o navegador Chrome/Safari:</strong> escaneie → abrirá uma página → autorize câmera</li>
-                <li><strong>5. Aponte a câmera para QUALQUER QR CODE ou imagem marcadora</strong></li>
-                <li><strong>6. A IMAGEM VAI APARECER FLUTUANDO NO AR! 🚀</strong></li>
+                <li><strong>3. Escaneie o QR Code com o navegador do celular</strong> (Chrome/Safari)</li>
+                <li><strong>4. Autorize o acesso à câmera</strong></li>
+                <li><strong>5. Aponte a câmera para o QR Code</strong> (na tela do computador)</li>
+                <li><strong>6. A IMAGEM VAI APARECER FLUTUANDO SOBRE O QR CODE! 🚀</strong></li>
             </ol>
             <p style="margin-top: 15px; background: #ff9800; color: #1a1a2e; padding: 10px; border-radius: 10px;">
-                📱 <strong>ATENÇÃO:</strong> Para funcionar, use o navegador do celular (Chrome/Safari). Escaneie o QR → abrirá uma página → autorize a câmera → aponte para o QR Code novamente → A IMAGEM FLUTUA!
+                📱 <strong>DICA IMPORTANTE:</strong> Use o navegador Chrome ou Safari no celular. Escaneie o QR → a página abre → autorize a câmera → aponte para o QR Code novamente → a imagem flutua em 3D com animações!
             </p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script>
-        let currentImageData = null;
+        let currentImageUrl = null;
         
-        function gerarPaginaAR(imagemURL) {
+        function gerarPaginaAR(urlImagem) {
             return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR Experience</title>
+    <title>AR Experience - Imagem Flutuante</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: Arial; }
         #info {
@@ -192,8 +244,9 @@
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 15px;
-            font-size: 16px;
+            font-size: 14px;
             z-index: 100;
+            pointer-events: none;
         }
         #loading {
             position: absolute;
@@ -206,60 +259,84 @@
             border-radius: 10px;
             text-align: center;
             z-index: 200;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div id="loading">🔍 Iniciando AR...<br>Aguarde</div>
-    <div id="info">✨ Aponte a câmera para o QR Code | A imagem vai flutuar! ✨</div>
+    <div id="info">✨ Aponte a câmera para o QR Code | A imagem vai flutuar em 3D! ✨</div>
 
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.min.js"><\/script>
     
     <script>
         setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
+            const loading = document.getElementById('loading');
+            if(loading) loading.style.display = 'none';
         }, 2000);
     <\/script>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;">
-        <!-- Marcador QR Code - O PRÓPRIO QR CODE é detectado -->
         <a-marker type="pattern" url="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/data/patt.hiro">
-            <!-- IMAGEM FLUTUANTE 3D -->
-            <a-image src="${imagemURL}" 
+            
+            <!-- IMAGEM FLUTUANTE PRINCIPAL -->
+            <a-image src="${urlImagem}" 
                      position="0 0.7 0"
                      rotation="0 0 0"
-                     scale="0.8 0.8 0.01"
+                     scale="0.7 0.7 0.01"
                      material="side: double; transparent: true">
+                
+                <!-- Animação de flutuação sobe e desce -->
                 <a-animation attribute="position" 
                             from="0 0.5 0" 
                             to="0 0.9 0" 
                             dur="1500" 
                             direction="alternate" 
                             repeat="indefinite"></a-animation>
+                
+                <!-- Animação de rotação -->
+                <a-animation attribute="rotation" 
+                            from="0 0 0" 
+                            to="0 360 0" 
+                            dur="8000" 
+                            repeat="indefinite"></a-animation>
             </a-image>
             
-            <!-- Efeitos visuais -->
-            <a-ring radius="0.8" radius-inner="0.7" color="#ff3366" opacity="0.8" material="side: double">
+            <!-- ANEL EXTERNO 1 - Giratório -->
+            <a-ring radius="0.9" radius-inner="0.8" color="#ff3366" opacity="0.8" material="side: double">
                 <a-animation attribute="rotation" from="0 0 0" to="0 360 0" dur="2000" repeat="indefinite"></a-animation>
             </a-ring>
             
-            <a-ring radius="1.0" radius-inner="0.9" color="#33ff66" opacity="0.5" material="side: double">
+            <!-- ANEL EXTERNO 2 - Gira ao contrário -->
+            <a-ring radius="1.1" radius-inner="1.0" color="#33ff66" opacity="0.5" material="side: double">
                 <a-animation attribute="rotation" from="0 0 0" to="0 -360 0" dur="3000" repeat="indefinite"></a-animation>
             </a-ring>
             
-            <!-- Partículas flutuantes -->
+            <!-- PARTÍCULAS FLUTUANTES AO REDOR -->
             <a-entity position="0 0.5 0">
-                <a-sphere radius="0.05" color="#ff6600" position="-0.5 0.2 0">
-                    <a-animation attribute="position" from="-0.5 -0.2 0" to="-0.5 0.8 0" dur="2000" direction="alternate" repeat="indefinite"></a-animation>
+                <a-sphere radius="0.08" color="#ff6600" position="-0.6 0.2 0">
+                    <a-animation attribute="position" from="-0.6 -0.2 0" to="-0.6 0.8 0" dur="2000" direction="alternate" repeat="indefinite"></a-animation>
                 </a-sphere>
-                <a-sphere radius="0.05" color="#ff0066" position="0.5 -0.1 0">
-                    <a-animation attribute="position" from="0.5 -0.3 0" to="0.5 0.7 0" dur="2500" direction="alternate" repeat="indefinite"></a-animation>
+                <a-sphere radius="0.08" color="#ff0066" position="0.6 -0.1 0">
+                    <a-animation attribute="position" from="0.6 -0.3 0" to="0.6 0.7 0" dur="2500" direction="alternate" repeat="indefinite"></a-animation>
                 </a-sphere>
-                <a-sphere radius="0.05" color="#66ff00" position="0 0.3 0.5">
-                    <a-animation attribute="position" from="0 0.1 0.5" to="0 0.9 0.5" dur="1800" direction="alternate" repeat="indefinite"></a-animation>
+                <a-sphere radius="0.08" color="#66ff00" position="0 0.3 0.6">
+                    <a-animation attribute="position" from="0 0.1 0.6" to="0 0.9 0.6" dur="1800" direction="alternate" repeat="indefinite"></a-animation>
+                </a-sphere>
+                <a-sphere radius="0.08" color="#ffcc00" position="-0.3 0.5 -0.5">
+                    <a-animation attribute="position" from="-0.3 0.3 -0.5" to="-0.3 0.9 -0.5" dur="2200" direction="alternate" repeat="indefinite"></a-animation>
                 </a-sphere>
             </a-entity>
+            
+            <!-- TEXTO FLUTUANTE -->
+            <a-text value="✨ AR ✨" 
+                    position="0 -0.3 0"
+                    color="#ffffff"
+                    scale="0.5 0.5 0.5"
+                    align="center">
+                <a-animation attribute="position" from="0 -0.5 0" to="0 -0.1 0" dur="1500" direction="alternate" repeat="indefinite"></a-animation>
+            </a-text>
         </a-marker>
         
         <a-entity camera></a-entity>
@@ -268,8 +345,13 @@
 </html>`;
         }
         
-        function gerarQRCode(imagemData) {
-            const arHTML = gerarPaginaAR(imagemData);
+        function gerarQRCode(urlImagem) {
+            if (!urlImagem) {
+                alert('Digite uma URL válida!');
+                return;
+            }
+            
+            const arHTML = gerarPaginaAR(urlImagem);
             const blob = new Blob([arHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             
@@ -290,67 +372,36 @@
             badge.innerHTML = '✅ QR Code gerado! Escaneie com o celular!';
             badge.className = 'badge success';
             
-            document.getElementById('statusMsg').innerHTML = '✅ PRONTO! Escaneie o QR Code com o navegador do celular!';
+            document.getElementById('statusMsg').innerHTML = '✅ QR Code gerado! Escaneie com o navegador do celular!';
             document.getElementById('statusMsg').style.color = '#4CAF50';
         }
         
-        function carregarImagem(file) {
-            if (!file || !file.type.startsWith('image/')) {
-                alert('Selecione uma imagem válida');
-                return;
-            }
+        function testarImagem(url) {
+            document.getElementById('imageUrl').value = url;
+            currentImageUrl = url;
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentImageData = e.target.result;
-                const preview = document.getElementById('preview');
-                preview.innerHTML = '<img src="' + currentImageData + '" class="image-preview" alt="Preview">';
-                document.getElementById('statusMsg').innerHTML = '✅ Imagem carregada! Clique em "GERAR QR CODE AR"';
-                document.getElementById('statusMsg').style.color = '#ff9800';
-            };
-            reader.readAsDataURL(file);
+            // Mostrar preview
+            const preview = document.getElementById('preview');
+            preview.innerHTML = `<img src="${url}" class="image-preview" alt="Preview" 
+                                onerror="this.style.display='none'; document.getElementById('statusMsg').innerHTML='❌ Erro: Imagem não carregou. Verifique a URL'; 
+                                document.getElementById('statusMsg').style.color='#f44336'">`;
+            
+            document.getElementById('statusMsg').innerHTML = '✅ URL carregada! Clique em GERAR QR CODE AR';
+            document.getElementById('statusMsg').style.color = '#ff9800';
         }
         
         // Eventos
-        const dropArea = document.getElementById('dropArea');
-        const fileInput = document.getElementById('fileInput');
         const generateBtn = document.getElementById('generateBtn');
         const downloadQRBtn = document.getElementById('downloadQRBtn');
-        
-        dropArea.onclick = () => fileInput.click();
-        
-        dropArea.ondragover = (e) => {
-            e.preventDefault();
-            dropArea.style.borderColor = '#764ba2';
-        };
-        
-        dropArea.ondragleave = () => {
-            dropArea.style.borderColor = '#667eea';
-        };
-        
-        dropArea.ondrop = (e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                carregarImagem(file);
-            }
-            dropArea.style.borderColor = '#667eea';
-        };
-        
-        fileInput.onchange = (e) => {
-            if (e.target.files && e.target.files[0]) {
-                carregarImagem(e.target.files[0]);
-            }
-        };
+        const imageUrlInput = document.getElementById('imageUrl');
         
         generateBtn.onclick = () => {
-            if (currentImageData) {
-                gerarQRCode(currentImageData);
-            } else if (fileInput.files[0]) {
-                carregarImagem(fileInput.files[0]);
-                setTimeout(() => gerarQRCode(currentImageData), 100);
+            let url = imageUrlInput.value.trim();
+            if (url) {
+                currentImageUrl = url;
+                gerarQRCode(url);
             } else {
-                alert('Selecione uma imagem primeiro!');
+                alert('Digite a URL da imagem primeiro!');
             }
         };
         
@@ -363,6 +414,16 @@
                 link.click();
             }
         };
+        
+        // Carregar URL quando digitar
+        imageUrlInput.onchange = () => {
+            const url = imageUrlInput.value.trim();
+            if (url) {
+                testarImagem(url);
+            }
+        };
+        
+        window.testarImagem = testarImagem;
     </script>
 </body>
 </html>
